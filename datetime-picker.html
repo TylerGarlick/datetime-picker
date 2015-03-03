@@ -17,18 +17,19 @@ Element providing solution to no problem in particular.
 @status alpha
 @homepage http://tylergarlick.github.io/datetime-picker
 -->
-<polymer-element name="datetime-picker" attributes="selectedDate selectedTime format time datetime minuteIncrement" minuteIncrement="1" time="false" datetime="false" format="MM/DD/YYYY h:mm A">
+<polymer-element name="datetime-picker" attributes="selectedDate format time datetime minuteIncrement" minuteIncrement="1" time="false" datetime="false" format="MM/DD/YYYY h:mm A">
   <template>
     <link rel="stylesheet" href="datetime-picker.css">
 
     <datetime-utils id="utils"></datetime-utils>
 
-    <input type="datetime" class="datetime-input" value="{{ selectedDate | formatForInput }}" class="{{ class }}" on-focus="{{ toggleVisibility }}"/>
+    <input type="datetime" class="datetime-input" value="{{ selectedDate | formatForInput }}" class="{{ class }}" on-tap="{{ toggleVisibility }}"/>
+    <!--<button type="button" on-tap="{{ toggleVisibility }}">Toggle</button>-->
 
-    <paper-dialog id="dialog" class="datetime-picker-dialog" transition="core-transition-bottom" backdrop layout horizontal>
+    <paper-dialog id="dialog" class="datetime-picker-dialog" transition="core-transition-bottom" backdrop>
       <div layout horizontal>
         <datetime-weeks selectedDate="{{ selectedDate }}" on-datetime-picker-date-selected="{{ dateSelected }}"></datetime-weeks>
-        <datetime-time selectedTime="{{ selectedTime }}" minuteIncrment="{{ minuteIncrement }}" on-datetime-picker-time-changed="{{ timeChanged }}"></datetime-time>
+        <datetime-time selectedDate="{{ selectedDate }}" minuteIncrment="{{ minuteIncrement }}" on-datetime-picker-time-changed="{{ timeChanged }}"></datetime-time>
       </div>
     </paper-dialog>
 
@@ -37,20 +38,20 @@ Element providing solution to no problem in particular.
   <script>
     Polymer({
 
+      create: function () {
+        this.selectedDate = moment();
+      },
 
       ready: function () {
-        this.selectedDate = moment(new Date());
-        this.selectedTime = moment(new Date());
+        this.selectedDate = moment();
       },
 
       show: function () {
-//        this.$.picker.setAttribute('class', 'show-picker');
         this.$.dialog.toggle();
       },
 
       hide: function () {
         this.$.dialog.toggle();
-//        this.$.picker.setAttribute('class', 'hide-picker');
       },
 
       toggleVisibility: function () {
@@ -58,22 +59,20 @@ Element providing solution to no problem in particular.
       },
 
       formatForInput: function () {
-        if (this.selectedTime && this.selectedDate) {
-          return this.$.utils.combine(this.selectedDate, this.selectedTime, this.format);
+        if (this.$) {
+          return this.$.utils.formatDate(this.selectedDate, this.format);
         }
       },
 
 
       dateSelected: function (e) {
-        this.selectedDate = this.$.utils.combine(e.detail, this.selectedTime);
-        this.$.dialog.toggle();
-
+        this.selectedDate = e.detail;
+        this.toggleVisibility();
       },
 
       timeChanged: function (e) {
         if (e) {
-          this.selectedTime = e.detail;
-          this.selectedDate = this.$.utils.combine(this.selectedDate, this.selectedTime);
+          this.selectedDate = e.detail;
         }
       }
 

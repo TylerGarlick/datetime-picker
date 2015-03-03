@@ -57,6 +57,7 @@ Element providing solution to no problem in particular.
       },
       ready: function () {
         this.weekdays = this.$.utils.weekdays;
+        this.selectedDate = moment(this.selectedDate);
         this.weeks = this.$.utils.buildMonth(this.selectedDate);
       },
       addMonth: function () {
@@ -74,8 +75,8 @@ Element providing solution to no problem in particular.
       },
 
       isSelectedDate: function (value) {
-        if (this.selectedDate) {
-          return moment(value.date()).isSame(this.selectedDate.date()) && moment(value.month()).isSame(this.selectedDate.month()) ? 'selected' : '';
+        if (this.selectedDate && value) {
+          return moment(value.date()).isSame(moment(this.selectedDate).date()) && moment(value.month()).isSame(moment(this.selectedDate).month()) ? 'selected' : '';
         }
       },
 
@@ -84,7 +85,10 @@ Element providing solution to no problem in particular.
       },
 
       daySelected: function (e) {
-        this.selectedDate = e.target.templateInstance.model.day.date;
+        var date = moment(e.target.templateInstance.model.day.date);
+        date.hour(this.selectedDate.hour());
+        date.minute(this.selectedDate.minute());
+        this.selectedDate = date;
         this.fire('datetime-picker-date-selected', this.selectedDate);
       }
     });

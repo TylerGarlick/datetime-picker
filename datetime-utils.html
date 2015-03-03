@@ -1,26 +1,12 @@
 <link rel="import" href="../polymer/polymer.html"/>
+<script src="../moment/moment.js" type="application/javascript"></script>
 
 <polymer-element name="datetime-utils" hidden>
-  <script src="../moment/moment.js" type="application/javascript"></script>
   <script>
     (function () {
       Polymer({
         weekdays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
         now: moment(),
-
-        combine: function (date, time, format) {
-          date = moment(date);
-          time = moment(time);
-
-          date.hour(moment(time).hour());
-          date.minute(moment(time).minute());
-
-          if (format) {
-            return date.format(format);
-          } else {
-            return date;
-          }
-        },
 
         formatDate: function (date, format) {
           return moment(date).format(format);
