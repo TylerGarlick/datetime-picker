@@ -1,0 +1,97 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="./datetime-utils.html"/>
+<link rel="import" href="../paper-icon-button/paper-icon-button.html"/>
+<link rel="import" href="../moment/moment.js"/>
+<!--
+Element providing solution to no problem in particular.
+
+##### Example
+
+    <datetime-picker></datetime-picker>
+
+@element datetime-picker
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://tylergarlick.github.io/datetime-picker
+-->
+<polymer-element name="datetime-time" attributes="date visible selectedTime minuteIncrement" minuteIncrement="1">
+  <template>
+    <link rel="stylesheet" href="datetime-picker.css">
+
+    <datetime-utils id="utils"></datetime-utils>
+
+    <div layout vertical>
+
+      <div class="time-view" layout horizontal>
+        <div layout vertical center class="time-selector">
+          <paper-icon-button icon="expand-less" on-tap="{{ subtractHour }}"></paper-icon-button>
+          <div><input type="text" value="{{ selectedTime | formatTimeHour }}" id="timeHour"/></div>
+          <paper-icon-button icon="expand-more" on-tap="{{ addHour }}"></paper-icon-button>
+        </div>
+        <div layout vertical center class="time-selector">
+          <paper-icon-button icon="expand-less" on-tap="{{ subtractMinute }}"></paper-icon-button>
+          <div><input type="text" value="{{ selectedTime | formatTimeMinute }}" id="timeMinute"/></div>
+          <paper-icon-button icon="expand-more" on-tap="{{ addMinute }}"></paper-icon-button>
+        </div>
+        <div layout vertical center class="time-selector">
+          <paper-icon-button icon="expand-less" on-tap="{{ toggleAmAndPm }}"></paper-icon-button>
+          <div class="am-and-pm">{{ selectedTime | formatTimeAMPM }}</div>
+          <paper-icon-button icon="expand-more" on-tap="{{ toggleAmAndPm }}"></paper-icon-button>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      
+      selectedTime: moment(),
+
+      addHour: function () {
+        this.selectedTime = moment(this.selectedTime).add(1, 'hour');
+        this.fireTimeChangedEvent();
+      },
+
+      subtractHour: function () {
+        this.selectedTime = moment(this.selectedTime).add(-1, 'hour');
+        this.fireTimeChangedEvent();
+      },
+
+      addMinute: function () {
+        this.selectedTime = moment(this.selectedTime).add(this.minuteIncrement, 'minute');
+        this.fireTimeChangedEvent();
+      },
+
+      subtractMinute: function () {
+        this.selectedTime = moment(this.selectedTime).add(this.minuteIncrement * -1, 'minute');
+        this.fireTimeChangedEvent();
+      },
+
+      toggleAmAndPm: function () {
+        this.selectedTime = moment(this.selectedTime).add(12, 'hours');
+        this.fireTimeChangedEvent();
+      },
+
+      formatTimeHour: function (value) {
+        if (this.$) {
+          return this.$.utils.formatTime(value, 'h');
+        }
+      },
+
+      formatTimeMinute: function (value) {
+        if (this.$) {
+          return this.$.utils.formatTime(value, 'mm');
+        }
+      },
+
+      formatTimeAMPM: function (value) {
+        if (this.$) {
+          return this.$.utils.formatTime(value, 'A');
+        }
+      },
+
+      fireTimeChangedEvent: function () {
+        this.fire('datetime-picker-time-changed', this.selectedTime);
+      }
+    });
+  </script>
+</polymer-element>

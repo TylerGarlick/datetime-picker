@@ -1,0 +1,92 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="./datetime-utils.html"/>
+<link rel="import" href="../paper-icon-button/paper-icon-button.html"/>
+<link rel="import" href="../paper-button/paper-button.html"/>
+<link rel="import" href="../moment/moment.js"/>
+<!--
+Element providing solution to no problem in particular.
+
+##### Example
+
+    <datetime-picker></datetime-picker>
+
+@element datetime-picker
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://tylergarlick.github.io/datetime-picker
+-->
+<polymer-element name="datetime-weeks" attributes="date selectedDate">
+  <template>
+    <link rel="stylesheet" href="datetime-picker.css">
+
+    <datetime-utils id="utils"></datetime-utils>
+    <div class="calendar-view">
+      <div id="header" layout horizontal>
+        <paper-icon-button icon="chevron-left" on-tap="{{ subtractMonth }}"></paper-icon-button>
+        <div flex center>
+          <h4>{{ selectedDate | formatMonthYear }}</h4>
+        </div>
+        <paper-icon-button icon="chevron-right" on-tap="{{ addMonth }}"></paper-icon-button>
+      </div>
+      <div class="weekdays" layout horizontal center>
+        <template repeat="{{ weekday in weekdays }}">
+          <div class="weekday-name">{{ weekday }}</div>
+        </template>
+      </div>
+      <div class="weeks">
+        <div layout horizontal wrap>
+          <template repeat="{{ week in weeks }}">
+            <template repeat="{{ day in week.days }}">
+              <div layout horizontal center-justified
+                   class="day {{ day.isToday ? 'today' : '' }} {{ day.isCurrentMonth ? 'current-month': 'different-month' }} {{ day.date | isSelectedDate }}"
+                   on-tap="{{ daySelected }}">
+                <div layout horizontal center>{{ day.number }}</div>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      selectedDate: moment(),
+      created: function () {
+        this.now = new Date();
+      },
+      ready: function () {
+        this.weekdays = this.$.utils.weekdays;
+        this.weeks = this.$.utils.buildMonth(this.selectedDate);
+      },
+      addMonth: function () {
+        this.selectedDate = moment(this.selectedDate).add(1, 'month');
+      },
+
+      subtractMonth: function () {
+        this.selectedDate = moment(this.selectedDate).add(-1, 'month');
+      },
+
+      formatMonthYear: function (value) {
+        if (this.$) {
+          return this.$.utils.formatDate(value, 'MMM YYYY');
+        }
+      },
+
+      isSelectedDate: function (value) {
+        if (this.selectedDate) {
+          return moment(value.date()).isSame(this.selectedDate.date()) && moment(value.month()).isSame(this.selectedDate.month()) ? 'selected' : '';
+        }
+      },
+
+      selectedDateChanged: function () {
+        this.weeks = this.$.utils.buildMonth(this.selectedDate);
+      },
+
+      daySelected: function (e) {
+        this.selectedDate = e.target.templateInstance.model.day.date;
+        this.fire('datetime-picker-date-selected', this.selectedDate);
+      }
+    });
+  </script>
+</polymer-element>

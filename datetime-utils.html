@@ -1,0 +1,76 @@
+<link rel="import" href="../polymer/polymer.html"/>
+
+<polymer-element name="datetime-utils" hidden>
+  <script src="../moment/moment.js" type="application/javascript"></script>
+  <script>
+    (function () {
+      Polymer({
+        weekdays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        now: moment(),
+
+        combine: function (date, time, format) {
+          date = moment(date);
+          time = moment(time);
+
+          date.hour(moment(time).hour());
+          date.minute(moment(time).minute());
+
+          if (format) {
+            return date.format(format);
+          } else {
+            return date;
+          }
+        },
+
+        formatDate: function (date, format) {
+          return moment(date).format(format);
+        },
+
+        formatTime: function (time, format) {
+          return moment(time).format(format);
+        },
+
+        buildMonth: function (start) {
+          var weeks = [];
+          var done = false
+            , date = moment(start).clone()
+            , month = date.month()
+            , monthIndex = moment(date).month()
+            , count = 0;
+
+          var startOfMonth = date.startOf('month');
+          var day = startOfMonth.day();
+          date = startOfMonth.add(day * -1, 'days');
+
+          while (!done) {
+            weeks.push({ days: this.buildWeek(date.clone(), month) });
+            date.add(1, "w");
+            done = count++ > 2 && monthIndex !== date.month();
+            monthIndex = date.month();
+          }
+
+          return weeks;
+        },
+
+        buildWeek: function (date, month) {
+          var days = [];
+          date = moment(date);
+
+          for (var i = 0; i < 7; i++) {
+            days.push({
+              name: date.format("dd").substring(0, 1),
+              number: date.date(),
+              isCurrentMonth: moment(date).month() === month,
+              isToday: date.isSame(new Date(), "day"),
+              date: date
+            });
+            date = date.clone();
+            date.add(1, "d");
+          }
+          return days;
+        }
+
+      });
+    })();
+  </script>
+</polymer-element>

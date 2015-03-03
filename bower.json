@@ -1,0 +1,26 @@
+{
+  "name": "datetime-picker",
+  "version": "0.0.0",
+  "keywords": [
+    "seed",
+    "polymer",
+    "web-components"
+  ],
+  "main": "datetime-picker.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.4",
+    "moment": "~2.9.0",
+    "core-style": "Polymer/core-style#~0.5.5",
+    "paper-icon-button": "Polymer/paper-icon-button#~0.5.5",
+    "paper-button": "Polymer/paper-button#~0.5.5",
+    "paper-dialog": "Polymer/paper-dialog#~0.5.5"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^2.2.3"
+  },
+  "resolutions": {
+    "core-component-page": "master",
+    "polymer": "master",
+    "webcomponentsjs": "master"
+  }
+}

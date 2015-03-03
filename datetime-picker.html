@@ -1,0 +1,83 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html"/>
+<link rel="import" href="../paper-dialog/paper-dialog.html"/>
+<link rel="import" href="./datetime-utils.html"/>
+<link rel="import" href="./datetime-weeks.html"/>
+<link rel="import" href="./datetime-time.html"/>
+
+<!--
+Element providing solution to no problem in particular.
+
+##### Example
+
+    <datetime-picker></datetime-picker>
+
+@element datetime-picker
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://tylergarlick.github.io/datetime-picker
+-->
+<polymer-element name="datetime-picker" attributes="selectedDate selectedTime format time datetime minuteIncrement" minuteIncrement="1" time="false" datetime="false" format="MM/DD/YYYY h:mm A">
+  <template>
+    <link rel="stylesheet" href="datetime-picker.css">
+
+    <datetime-utils id="utils"></datetime-utils>
+
+    <input type="datetime" class="datetime-input" value="{{ selectedDate | formatForInput }}" class="{{ class }}" on-focus="{{ toggleVisibility }}"/>
+
+    <paper-dialog id="dialog" class="datetime-picker-dialog" transition="core-transition-bottom" backdrop layout horizontal>
+      <div layout horizontal>
+        <datetime-weeks selectedDate="{{ selectedDate }}" on-datetime-picker-date-selected="{{ dateSelected }}"></datetime-weeks>
+        <datetime-time selectedTime="{{ selectedTime }}" minuteIncrment="{{ minuteIncrement }}" on-datetime-picker-time-changed="{{ timeChanged }}"></datetime-time>
+      </div>
+    </paper-dialog>
+
+
+  </template>
+  <script>
+    Polymer({
+
+
+      ready: function () {
+        this.selectedDate = moment(new Date());
+        this.selectedTime = moment(new Date());
+      },
+
+      show: function () {
+//        this.$.picker.setAttribute('class', 'show-picker');
+        this.$.dialog.toggle();
+      },
+
+      hide: function () {
+        this.$.dialog.toggle();
+//        this.$.picker.setAttribute('class', 'hide-picker');
+      },
+
+      toggleVisibility: function () {
+        this.$.dialog.toggle();
+      },
+
+      formatForInput: function () {
+        if (this.selectedTime && this.selectedDate) {
+          return this.$.utils.combine(this.selectedDate, this.selectedTime, this.format);
+        }
+      },
+
+
+      dateSelected: function (e) {
+        this.selectedDate = this.$.utils.combine(e.detail, this.selectedTime);
+        this.$.dialog.toggle();
+
+      },
+
+      timeChanged: function (e) {
+        if (e) {
+          this.selectedTime = e.detail;
+          this.selectedDate = this.$.utils.combine(this.selectedDate, this.selectedTime);
+        }
+      }
+
+
+    });
+  </script>
+</polymer-element>
