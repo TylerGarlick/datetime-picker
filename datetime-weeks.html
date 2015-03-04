@@ -84,10 +84,6 @@ Element providing solution to no problem in particular.
       },
 
       daySelected: function (e) {
-        var date = moment(e.target.templateInstance.model.day.date);
-        date.hour(this.selectedDate.hour());
-        date.minute(this.selectedDate.minute());
-        this.selectedDate = date;
         this.fire('datetime-picker-date-selected', this.selectedDate);
       }
     });
