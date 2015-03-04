@@ -14,7 +14,7 @@ Element providing solution to no problem in particular.
 @status alpha
 @homepage http://tylergarlick.github.io/datetime-picker
 -->
-<polymer-element name="datetime-time" attributes="date visible selectedDate minuteIncrement" minuteIncrement="1">
+<polymer-element name="datetime-time" attributes="visible selectedDate minuteIncrement">
   <template>
     <link rel="stylesheet" href="datetime-picker.css">
 
@@ -43,6 +43,8 @@ Element providing solution to no problem in particular.
   </template>
   <script>
     Polymer({
+
+
       addHour: function () {
         this.selectedDate = moment(this.selectedDate).add(1, 'hour');
         this.fireTimeChangedEvent();
@@ -54,7 +56,7 @@ Element providing solution to no problem in particular.
       },
 
       addMinute: function () {
-        this.selectedDate = moment(this.selectedTime).add(this.minuteIncrement, 'minute');
+        this.selectedDate = moment(this.selectedDate).add(this.minuteIncrement, 'minute');
         this.fireTimeChangedEvent();
       },
 

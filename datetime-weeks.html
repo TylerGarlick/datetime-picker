@@ -51,9 +51,8 @@ Element providing solution to no problem in particular.
   </template>
   <script>
     Polymer({
-      selectedDate: moment(),
       created: function () {
-        this.now = new Date();
+        this.selectedDate = moment();
       },
       ready: function () {
         this.weekdays = this.$.utils.weekdays;

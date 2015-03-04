@@ -17,19 +17,22 @@ Element providing solution to no problem in particular.
 @status alpha
 @homepage http://tylergarlick.github.io/datetime-picker
 -->
-<polymer-element name="datetime-picker" attributes="selectedDate format time datetime minuteIncrement" minuteIncrement="1" time="false" datetime="false" format="MM/DD/YYYY h:mm A">
+<polymer-element name="datetime-picker" attributes="value selectedDate format time datetime minuteIncrement class name label labelCss invalidCss" minuteIncrement="1" time="false" datetime="false" format="MM/DD/YYYY h:mm A" invalidCss="invalid">
   <template>
     <link rel="stylesheet" href="datetime-picker.css">
 
     <datetime-utils id="utils"></datetime-utils>
-
-    <input type="datetime" class="datetime-input" value="{{ selectedDate | formatForInput }}" class="{{ class }}" on-tap="{{ toggleVisibility }}"/>
-    <!--<button type="button" on-tap="{{ toggleVisibility }}">Toggle</button>-->
-
+    <template if="{{ label.length > 0 }}">
+      <label class?="{{ labelCss }}" for="{{ name }}">{{ label }}</label>
+    </template>
+    <input type="datetime" name="{{name}}" id="{{ name }}" class="datetime-input" value="{{ value }}" class="{{ class }}" on-tap="{{ toggleVisibility }}"/>
+    <template if="{{ !isValid }}">
+      <span class="invalid">Date/Time is an invalid format.</span>
+    </template>
     <paper-dialog id="dialog" class="datetime-picker-dialog" transition="core-transition-bottom" backdrop>
       <div layout horizontal>
         <datetime-weeks selectedDate="{{ selectedDate }}" on-datetime-picker-date-selected="{{ dateSelected }}"></datetime-weeks>
-        <datetime-time selectedDate="{{ selectedDate }}" minuteIncrment="{{ minuteIncrement }}" on-datetime-picker-time-changed="{{ timeChanged }}"></datetime-time>
+        <datetime-time selectedDate="{{ selectedDate }}" minuteIncrement="{{ minuteIncrement }}" on-datetime-picker-time-changed="{{ timeChanged }}"></datetime-time>
       </div>
     </paper-dialog>
 
@@ -37,15 +40,12 @@ Element providing solution to no problem in particular.
   </template>
   <script>
     Polymer({
+      value: '',
 
-      create: function () {
-        this.selectedDate = moment();
-      },
-
+      isValid: true,
       ready: function () {
         this.selectedDate = moment();
       },
-
       show: function () {
         this.$.dialog.toggle();
       },
@@ -55,25 +55,34 @@ Element providing solution to no problem in particular.
       },
 
       toggleVisibility: function () {
+        if (!this.selectedDate) {
+          this.selectedDate = moment();
+        }
         this.$.dialog.toggle();
       },
 
-      formatForInput: function () {
-        if (this.$) {
-          return this.$.utils.formatDate(this.selectedDate, this.format);
+      valueChanged: function (oldValue, newValue) {
+        var proposedDate = moment(newValue);
+        this.isValid = proposedDate.isValid() || newValue.length == 0;
+        if (this.isValid && newValue.length > 0) {
+          this.selectedDate = proposedDate;
         }
       },
 
-
       dateSelected: function (e) {
         this.selectedDate = e.detail;
-        this.toggleVisibility();
+        this.value = this.$.utils.formatDate(this.selectedDate, this.format);
+        this.setInputValue();
       },
 
       timeChanged: function (e) {
         if (e) {
-          this.selectedDate = e.detail;
+          this.setInputValue();
         }
+      },
+
+      setInputValue: function () {
+        this.value = this.$.utils.formatDate(this.selectedDate, this.format);
       }
 
 
